@@ -1,0 +1,25 @@
+{
+	"runtime": {
+		"interval": 50,
+		"timeout": 10000,
+		"maxDialDuration": 8000,
+		"maxCallDuration": 60000,
+		"maxButtonDuration": 60000,
+		"minButtonWait": 3000
+	},
+	"linphone": {
+		"cmd": "linphonecsh",
+		"delay": 300,
+		"verbose": true
+	},
+	"sip": {
+		"username": "620",
+		"password": "620",
+		"hostname": "fritz.box",
+		"dial": "**622"
+	},
+	"gpio": {
+		"button-pin": 16,
+		"button-pressed-state": false
+	}
+}
