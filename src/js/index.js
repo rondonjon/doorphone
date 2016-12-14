@@ -1,9 +1,8 @@
 "use strict";
 
-const path = require("path");
-const filelogger = require("file-logger");
 const timers = require("timers");
 const async = require("async");
+const logger = require("./logger.js");
 const linphone = require("./linphone.js");
 const gpio = require("./gpio.js");
 const config = require("./config.json");
@@ -13,24 +12,39 @@ let timeoutTimer = undefined;
 let dialStart = undefined;
 let callStart = undefined;
 let buttonStart = undefined;
+let lastAliveInfo = undefined;
 
-const logfile = path.resolve(path.join(__dirname, "../../", config.log.filename));
-filelogger(logfile);
+logger.init(config.log);
 
 function runtimeTimeout() {
-	console.log("[RUNTIME] Timeout reached during runtime execution; starting new runtime loop.");
-	start();
+	logger.log("[RUNTIME] Timeout reached during runtime execution; starting new runtime loop.");
+	runtimeLoop();
 }
 
 function handleError(err) {
-	console.log("[RUNTIME] Error: ", err);
+	logger.log("[RUNTIME] Error: ", err);
 }
 
 function runtimeLoop() {
 
+	const start = new Date();
+
 	// set timeout, in case that something hangs
 
+	if(timeoutTimer !== undefined) {
+		timers.clearTimeout(timeoutTimer);
+	}
+
 	timeoutTimer = timers.setTimeout(runtimeTimeout, config.runtime.timeout);
+
+	// every now and then, show that we are still alive
+
+	const now = new Date();
+
+	if(lastAliveInfo === undefined || now - lastAliveInfo > 5000) {
+		logger.log("[RUNTIME] still alive, all good.");
+		lastAliveInfo = now;
+	}
 
 	// do something
 
@@ -41,21 +55,23 @@ function runtimeLoop() {
 		(isInitialized, cb) => {
 			if (isInitialized) {
 				cb(null);
+				return;
 			}
-			else {
-				console.log("[RUNTIME] Not initialized. Initializing ...");
-				linphone.init(cb);
-			}
+
+			logger.log("[RUNTIME] Not initialized. Initializing ...");
+
+			linphone.init(err => cb(err || earlyExit));
 		},
 		linphone.isRegistered,
 		(isRegistered, cb) => {
 			if (isRegistered) {
 				cb(null);
+				return;
 			}
-			else {
-				console.log("[RUNTIME] Not registered. Registering ...");
-				linphone.register(cb);
-			}
+
+			logger.log("[RUNTIME] Not registered. Registering ...");
+
+			linphone.register(err => cb(err || earlyExit));
 		},
 		linphone.isDialing,
 		(isDialing, cb) => {
@@ -65,10 +81,11 @@ function runtimeLoop() {
 				if (dialStart === undefined) {
 					dialStart = now;
 				}
-				else if (now - dialStart >= cfg.runtime.maxDialDuration) {
+				
+				if (now - dialStart >= config.runtime.maxDialDuration) {
 					dialStart = undefined;
-					console.log("[RUNTIME] Maximum dial duration exceeded. Terminating call.");
-					linphone.terminateCalls(cb);
+					logger.log("[RUNTIME] Maximum dial duration exceeded. Terminating call.");
+					linphone.terminateCalls(err => cb(err || earlyExit));
 					return;
 				}
 
@@ -88,10 +105,11 @@ function runtimeLoop() {
 				if (callStart === undefined) {
 					callStart = now;
 				}
-				else if (now - callStart >= cfg.runtime.maxCallDuration) {
+				
+				if (now - callStart >= config.runtime.maxCallDuration) {
 					callStart = undefined;
-					console.log("[RUNTIME] Maximum call duration exceeded. Terminating call.");
-					linphone.terminateCalls(cb);
+					logger.log("[RUNTIME] Maximum call duration exceeded. Terminating call.");
+					linphone.terminateCalls(err => cb(err || earlyExit));
 					return;
 				}
 
@@ -110,15 +128,15 @@ function runtimeLoop() {
 			if (isButtonPressed) {
 
 				if (buttonStart === undefined) {
-					console.log("[RUNTIME] Button pressed. Initiating call.");
+					logger.log("[RUNTIME] Button pressed. Initiating call.");
 					buttonStart = now;
-					linphone.initiateCall(cb);
-				}
-				else if (now - buttonStart > cfg.runtime.maxButtonDuration) {
-					console.log("[RUNTIME] Maximum button press duration exceeded. Resetting runtime button state.");
-					buttonStart = undefined;
-					cb(earlyExit);
+					linphone.initiateCall(err => cb(err || earlyExit));
 					return;
+				}
+				
+				if (now - buttonStart > config.runtime.maxButtonDuration) {
+					logger.log("[RUNTIME] Maximum button press duration exceeded. Resetting runtime button state.");
+					buttonStart = undefined;
 				}
 
 				cb(earlyExit)
@@ -135,13 +153,31 @@ function runtimeLoop() {
 
 	function done(err) {
 		if(err) {
-			console.log("[RUNTIME] Error: ", err);
+			if(err === earlyExit) {
+				// nothing to do; just our way to exit the waterfall earlier.
+			}
+			else if(err.message === "deregistered") {
+				// the client is stuck in deregistered state.
+				// only solution at this time is to kill and restart it.
+				logger.log("[RUNTIME] linphone client is in deregistered state. Restarting linphone ...");
+				linphone.exit(err => done(err));
+				return;
+			}
+			else {
+				logger.log("[RUNTIME] Error: ", err);
+			}
 		}
+
+		const end = new Date();
+		logger.log(`[RUNTIME] loop execution finished in Â${end-start} ms`);
+
 		runtimeLoopTimer = timers.setTimeout(runtimeLoop, config.runtime.interval);
 	}
 }
 
 gpio.setup(config.gpio, () => {
 	linphone.configure(config);
-	runtimeLoopTimer = timers.setTimeout(runtimeLoop, 0);
+	linphone.exit(() => {
+		runtimeLoopTimer = timers.setTimeout(runtimeLoop, 0);
+	});
 });

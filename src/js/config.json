@@ -1,7 +1,4 @@
 {
-	"log": {
-		"filename": "doorphone.log"
-	},
 	"runtime": {
 		"interval": 50,
 		"timeout": 10000,
@@ -19,7 +16,7 @@
 		"username": "620",
 		"password": "620",
 		"hostname": "fritz.box",
-		"dial": "*621"
+		"dial": "**622"
 	},
 	"gpio": {
 		"button-pin": 16,
