@@ -2,6 +2,15 @@ const stream = require("stream");
 const spawn = require("child_process").spawn;
 const timers = require("timers");
 
+/*
+ * This class transforms linphonec's unstructured stdout stream
+ * into structured command objects { request: '...', response: '...' }.
+ *
+ * To do do, the Transform buffers the stdout content and searches for
+ * texts between two linphonec prompts. The content of the first line
+ * is known to be the command, whereas the following content is treated
+ * as the response.
+ */
 class OutTransform extends stream.Transform {
 
 	constructor(options) {
@@ -36,6 +45,18 @@ class OutTransform extends stream.Transform {
 	}
 }
 
+/*
+ * A (simple, very limited) wrapper for the LinPhone client application.
+ *
+ * The client is spawned in a child process, and all communication is handled
+ * through the stdin/stdout streams.
+ *
+ * All readable/state information should be retrieved through getState().
+ *
+ * The "writing" operations apply "fire and forget", i.e. they will not return any
+ * success or state information; the calling application will need to observe
+ * the state changes to understand if a submitted command has succeeded.
+ */
 class LinPhoneImpl {
 
 	constructor(options) {
@@ -183,6 +204,9 @@ class LinPhoneImpl {
 	}
 }
 
+/*
+ * A small wrapper with a stable API to hide the implementing class above.
+ */
 class LinPhone {
 
 	constructor(config) {
