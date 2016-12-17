@@ -200,12 +200,12 @@ class LinPhoneImpl {
 		this.request(`register ${username} ${hostname} ${password}`);
 	}
 
-	dial() {
-
+	dial(number) {
+		this.request(`dial ${number}`);
 	}
 
-	terminateCalls() {
-
+	hangup() {
+		this.request("terminate all");
 	}
 
 	getState() {
@@ -222,7 +222,7 @@ class LinPhone {
 		const impl = new LinPhoneImpl(config);
 		const that = this;
 
-		['start', 'stop', 'dial', 'terminateCalls', 'register', 'getState'].forEach(fn => {
+		['start', 'stop', 'dial', 'hangup', 'register', 'getState'].forEach(fn => {
 			that[fn] = function() {
 				impl[fn].apply(impl, arguments);
 			};

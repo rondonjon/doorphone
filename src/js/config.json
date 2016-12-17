@@ -1,11 +1,9 @@
 {
 	"runtime": {
-		"interval": 50,
-		"timeout": 10000,
-		"maxDialDuration": 8000,
-		"maxCallDuration": 60000,
-		"maxButtonDuration": 60000,
-		"minButtonWait": 3000
+		"delayFirstRegistration": 2500,
+		"intervalCheckRegistration": 60000,
+		"intervalReadButtonState": 50,
+		"durationButtonThrottle": 3000
 	},
 	"linphone": {
 		"runtimeInterval": 1000,
