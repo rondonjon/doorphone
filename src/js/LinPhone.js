@@ -214,9 +214,11 @@ class LinPhoneImpl {
 class LinPhone {
 
 	constructor(config) {
-		this._impl = new LinPhoneImpl(config);
+		const impl = new LinPhoneImpl(config);
+		const that = this;
+
 		['start', 'dial', 'terminateCalls', 'register', 'getState'].forEach(fn => {
-			this[fn] = () => this._impl[fn].apply(this._impl, arguments);
+			that[fn] = () => impl[fn].apply(impl, arguments);
 		});
 	}
 }
