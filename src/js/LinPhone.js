@@ -25,8 +25,8 @@ class OutTransform extends stream.Transform {
 
 		function handler(all, request, response) {
 			that.push(JSON.stringify({
-				request,
-				response.trim()
+				'request': request,
+				'response': response.trim()
 			}));
 			return 'linphonec> ';
 		}
