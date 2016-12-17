@@ -55,10 +55,12 @@ function checkDialTimeout() {
 		return;
 	}
 
+	const now = new Date();
+
 	if(lastDialState === false && newDialState === true) {
 		// started dialing
 		lastDialState = true;
-		lastDialStart = new Date();
+		lastDialStart = now;
 		return;
 	}
 
