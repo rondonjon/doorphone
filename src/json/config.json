@@ -20,7 +20,7 @@
 		"username": "sip:620@fritz.box",
 		"password": "620",
 		"hostname": "sip:fritz.box",
-		"dial": "**622"
+		"dial": "**701"
 	},
 	"gpio": {
 		"button-pin": 16,
