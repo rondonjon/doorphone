@@ -26,7 +26,7 @@ class OutTransform extends stream.Transform {
 		function handler(all, request, response) {
 			that.push(JSON.stringify({
 				request,
-				response
+				response.trim()
 			}));
 			return 'linphonec> ';
 		}
@@ -34,7 +34,7 @@ class OutTransform extends stream.Transform {
 		for(;;) {
 			// find combinations of request & response
 			// between every two 'linphonec> ' prompts
-			let v = that.str.replace(/linphonec>      (.*)\n([^]*?)\nlinphonec> /m, handler);
+			let v = that.str.replace(/linphonec>      (.*)\n([^]*?)linphonec> /m, handler);
 			if(v === that.str) {
 				break;
 			}
