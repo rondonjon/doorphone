@@ -147,6 +147,10 @@ class LinPhoneImpl {
 				changes.isDialing = false;
 				changes.isInCall = true;
 			}
+			else {
+				changes.isDialing = true;
+				changes.isInCall = false;
+			}
 		}
 
 		Object.keys(changes).forEach(key => {
@@ -187,10 +191,7 @@ class LinPhoneImpl {
 
 		if(this.linphone) {
 			this.request('status register');
-			if(this.state.isRegistered) {
-				this.request('status hook');
-				//this.request('calls\n');
-			}
+			this.request('status hook');
 		}
 
 		this.runtimeTimer = timers.setTimeout(() => this.runtimeLoop(), this.config.runtimeInterval);

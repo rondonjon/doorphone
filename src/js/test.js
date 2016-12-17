@@ -6,7 +6,6 @@ const config = require("./config.json");
 const lp = new LinPhone(config.linphone);
 lp.start();
 
-let ignoreButtonDownUntil = new Date();
 let lastButtonPressedState = false;
 
 function register() {
