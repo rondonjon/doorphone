@@ -14,7 +14,8 @@
 		"logState": true,
 		"logStateChanges": true,
 		"executable": "linphonec",
-		"args": []
+		"args": [],
+		"autoanswer": true
 	},
 	"sip": {
 		"username": "sip:620@fritz.box",

@@ -3,12 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/js/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "dependencies": {
-	  "rpi-gpio": "*",
-	  "async": "*",
+	  "rpi-gpio": "*"
   },
   "author": "Ron Don Jon",
   "license": "MIT"

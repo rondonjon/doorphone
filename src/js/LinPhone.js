@@ -69,6 +69,7 @@ class LinPhoneImpl {
 				logState: true,
 				logStateChanges: true,
 				executable: 'linphonec',
+				autoanswer: true,
 				args: []
 			},
 			options || {}
@@ -110,10 +111,11 @@ class LinPhoneImpl {
 
 	handleCommand(command) {
 
+		const that = this;
 		const req = command.request;
 		const resp = command.response;
 
-		if(this.config.logCommands) {
+		if(that.config.logCommands) {
 			console.log("[command]", JSON.stringify(command));
 		}
 
@@ -154,13 +156,16 @@ class LinPhoneImpl {
 		}
 
 		Object.keys(changes).forEach(key => {
-			if(changes[key] !== this.state[key]) {
-				if(this.config.logStateChanges) {
+			if(changes[key] !== that.state[key]) {
+				if(that.config.logStateChanges) {
 					console.log("[state change]", `${key}: ${this.state[key]} => ${changes[key]}`);
 				}
-				this.state[key] = changes[key];
+				that.state[key] = changes[key];
+				if(key === "isRegistered" && changes[key] === true) {
+					that.handleRegistration();
+				}
 			}
-		})
+		});
 	}
 
 	handleClose() {
@@ -177,6 +182,15 @@ class LinPhoneImpl {
 
 		// spawn a new client
 		this.start();
+	}
+
+	handleRegistration() {
+		if(this.config.autoanswer === true) {
+			this.request("autoanswer enable");
+		}
+		else {
+			this.request("autoanswer disable");
+		}
 	}
 
 	request(command) {
