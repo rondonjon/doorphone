@@ -7,4 +7,4 @@ lp.start();
 
 timers.setTimeout(() => {
 	lp.register(config.sip.username, config.sip.hostname, config.sip.password);
-}, 1000);
+}, 5000);

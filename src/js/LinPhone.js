@@ -181,9 +181,9 @@ class LinPhoneImpl {
 		}
 
 		if(this.linphone) {
-			this.request('status register\n');
+			this.request('status register');
 			if(this.state.isRegistered) {
-				this.request('status hook\n');
+				this.request('status hook');
 				//this.request('calls\n');
 			}
 		}
@@ -192,7 +192,7 @@ class LinPhoneImpl {
 	}
 
 	register(username, hostname, password) {
-		this.request(`register ${username} ${hostname} ${password}\n`);
+		this.request(`register ${username} ${hostname} ${password}`);
 	}
 
 	dial() {
