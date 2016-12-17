@@ -40,6 +40,11 @@ gpio.setup(config.gpio, () => {
 
 			if(isPressed !== lastButtonPressedState) {
 
+				if(config.runtime.logButtonStateChanges) {
+					const label = { true: 'down', false: 'up' };
+					console.log(`[runtime] button state changed ${label[lastButtonPressedState]} => ${label[isPressed]}`);
+				}
+
 				const now = new Date();
 				lastButtonPressedState = isPressed;
 

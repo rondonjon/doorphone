@@ -3,7 +3,8 @@
 		"delayFirstRegistration": 2500,
 		"intervalCheckRegistration": 60000,
 		"intervalReadButtonState": 50,
-		"durationButtonThrottle": 3000
+		"durationButtonThrottle": 3000,
+		"logButtonStateChanges": true
 	},
 	"linphone": {
 		"runtimeInterval": 1000,
