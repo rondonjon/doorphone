@@ -14,6 +14,27 @@ function register() {
 	}
 }
 
+function checkDialTimeout() {
+
+	const state = lp.getState();
+
+	if(!state.isDialing) {
+		// either hung up or answered; either way: no further checks needed
+		return;
+	}
+
+	const now = new Date();
+
+	if(now - lastDialStart > config.runtime.durationDialTimeout) {
+		lp.hangup();
+		return;
+	}
+
+	// The interval for the next check should not be to high,
+	// otherwise we could miss hangup + redial
+	timers.setTimeout(checkDialTimeout, config.runtime.intervalCheckDialTimeout);
+}
+
 function throttle(fn, duration) {
 	let blockedUntil = new Date();
 	return function() {
@@ -43,9 +64,14 @@ function handleButton() {
 	}
 	else if (s.isRegistered) {
 		const number = config.sip.dial;
+
 		if(config.runtime.logButtonActions) {
 			console.log(`[runtime] dialing ${number}`);
 		}
+
+		lastDialStart = new Date();
+		timers.setTimeout(checkDialTimeout, config.runtime.intervalCheckDialTimeout);
+
 		lp.dial(number);
 	}
 	else {

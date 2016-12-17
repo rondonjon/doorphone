@@ -4,6 +4,8 @@
 		"intervalCheckRegistration": 60000,
 		"intervalReadButtonState": 50,
 		"durationButtonThrottle": 3000,
+		"intervalCheckDialTimeout": 100,
+		"durationDialTimeout": 15000,
 		"logButtonStateChanges": true,
 		"logButtonActions": true,
 		"logButtonThrottles": true
