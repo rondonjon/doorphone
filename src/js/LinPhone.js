@@ -68,7 +68,8 @@ class LinPhoneImpl {
 				logCommands: true,
 				logState: true,
 				logStateChanges: true,
-				executable: 'linphonec'
+				executable: 'linphonec',
+				args: []
 			},
 			options || {}
 		);
@@ -90,7 +91,7 @@ class LinPhoneImpl {
 
 		const that = this;
 
-		that.linphone = spawn(that.config.executable);
+		that.linphone = spawn(that.config.executable, that.config.args);
 
 		that.linphone.stdout.pipe(new OutTransform()).on('data', data => {
 			const str = data.toString();
