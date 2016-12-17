@@ -62,7 +62,7 @@ function checkDialTimeout() {
 		return;
 	}
 
-	if(lastDialState === true && isDialing === true) {
+	if(lastDialState === true && newDialState === true) {
 		// continued dialing
 		if(now - lastDialStart > config.runtime.durationDialTimeout) {
 			// dial limit exceeded
