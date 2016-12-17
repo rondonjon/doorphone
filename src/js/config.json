@@ -13,7 +13,7 @@
 		"logState": true,
 		"logStateChanges": true,
 		"executable": "linphonec",
-		"args": [ "-c", "config.tmp" ]
+		"args": []
 	},
 	"sip": {
 		"username": "sip:620@fritz.box",
