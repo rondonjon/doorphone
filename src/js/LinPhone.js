@@ -143,7 +143,7 @@ class LinPhoneImpl {
 				changes.isDialing = false;
 				changes.isInCall = false;
 			}
-			else if(line.startsWith('Call out, ')) {
+			else if(resp.startsWith('Call out, ')) {
 				changes.isDialing = false;
 				changes.isInCall = true;
 			}
@@ -201,7 +201,7 @@ class LinPhoneImpl {
 	}
 
 	dial(number) {
-		this.request(`dial ${number}`);
+		this.request(`call ${number}`);
 	}
 
 	hangup() {
@@ -224,7 +224,7 @@ class LinPhone {
 
 		['start', 'stop', 'dial', 'hangup', 'register', 'getState'].forEach(fn => {
 			that[fn] = function() {
-				impl[fn].apply(impl, arguments);
+				return impl[fn].apply(impl, arguments);
 			};
 		});
 	}
