@@ -15,6 +15,17 @@ function register() {
 	}
 }
 
+function throttle(fn, duration) {
+	let blockedUntil = undefined;
+	return function() {
+		const now = new Date();
+		if(!blockedUntil || now >= blockedUntil) {
+			blockedUntil = now + duration;
+			return fn.apply(null, arguments);
+		}
+	};
+}
+
 function handleButton() {
 
 	const s = lp.getState();
@@ -26,6 +37,8 @@ function handleButton() {
 		lp.dial(config.sip.dial);
 	}
 }
+
+const handleButtonThrottled = throttle(handleButton, config.runtime.durationButtonThrottle);
 
 timers.setTimeout(() => {
 	// First-time registration
@@ -45,15 +58,8 @@ gpio.setup(config.gpio, () => {
 					console.log(`[runtime] button state changed ${label[lastButtonPressedState]} => ${label[isPressed]}`);
 				}
 
-				const now = new Date();
 				lastButtonPressedState = isPressed;
-
-				if(isPressed && now >= ignoreButtonDownUntil) {
-					// throttle/ignore further button presses for <configured duration>
-					ignoreButtonDownUntil = now + config.runtime.durationButtonThrottle;
-					// initiate a call
-					handleButton();
-				}
+				handleButtonThrottled();
 			}
 		})
 	}, config.runtime.intervalReadButtonState);
