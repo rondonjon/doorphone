@@ -15,7 +15,7 @@
 	"sip": {
 		"username": "sip:620@fritz.box",
 		"password": "620",
-		"hostname": "fritz.box",
+		"hostname": "sip:fritz.box",
 		"dial": "**622"
 	},
 	"gpio": {

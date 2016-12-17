@@ -218,7 +218,9 @@ class LinPhone {
 		const that = this;
 
 		['start', 'dial', 'terminateCalls', 'register', 'getState'].forEach(fn => {
-			that[fn] = () => impl[fn].apply(impl, arguments);
+			that[fn] = function() {
+				impl[fn].apply(impl, arguments);
+			};
 		});
 	}
 }
