@@ -11,7 +11,23 @@ let lastDialState = false;
 let lastDialStart = undefined;
 
 function register() {
-	if(lp.getState().isRegistered === false) {
+
+	const state = lp.getState();
+
+	if(state === undefined) {
+		// not ready
+		return;
+	}
+
+	const isRegistered = state.isRegistered;
+
+	if(isRegistered === undefined) {
+		// not ready
+		return;
+	}
+
+	if(isRegistered === false) {
+		// try to register.
 		lp.register(config.sip.username, config.sip.hostname, config.sip.password);
 	}
 }
@@ -42,7 +58,7 @@ function checkDialTimeout() {
 	if(lastDialState === false && newDialState === true) {
 		// started dialing
 		lastDialState = true;
-		lastDialState = new Date();
+		lastDialStart = new Date();
 		return;
 	}
 
