@@ -50,6 +50,9 @@ function checkDialTimeout() {
 		// continued dialing
 		if(now - lastDialStart > config.runtime.durationDialTimeout) {
 			// dial limit exceeded
+			if(config.runtime.logDialTimeout) {
+				console.log("[runtime] dial timeout exceeded; hanging up");
+			}
 			lp.hangup();
 			return;
 		}

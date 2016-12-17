@@ -8,7 +8,8 @@
 		"durationDialTimeout": 15000,
 		"logButtonStateChanges": true,
 		"logButtonActions": true,
-		"logButtonThrottles": true
+		"logButtonThrottles": true,
+		"logDialTimeout": true
 	},
 	"linphone": {
 		"runtimeInterval": 1000,
