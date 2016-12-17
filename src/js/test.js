@@ -18,10 +18,16 @@ function throttle(fn, duration) {
 	let blockedUntil = undefined;
 	return function() {
 		const now = new Date();
-		if(!blockedUntil || now >= blockedUntil) {
-			blockedUntil = now + duration;
-			return fn.apply(null, arguments);
+
+		if(blockedUntil !== undefined && blockedUntil >= now) {
+			if(config.runtime.logButtonThrottles) {
+				console.log("[runtime] button still throttled; skipping action");
+			}
+			return;
 		}
+
+		blockedUntil = now + duration;
+		return fn.apply(null, arguments);
 	};
 }
 
@@ -30,10 +36,22 @@ function handleButton() {
 	const s = lp.getState();
 
 	if(s.isDialing || s.isInCall) {
+		if(runtime.config.logButtonActions) {
+			console.log("[runtime] hanging up");
+		}
 		lp.hangup();
 	}
 	else if (s.isRegistered) {
-		lp.dial(config.sip.dial);
+		const number = config.sip.dial;
+		if(runtime.config.logButtonActions) {
+			console.log(`[runtime] dialing ${number}`);
+		}
+		lp.dial(number);
+	}
+	else {
+		if(runtime.config.logButtonActions) {
+			console.log(`[runtime] no action`);
+		}
 	}
 }
 

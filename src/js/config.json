@@ -4,7 +4,9 @@
 		"intervalCheckRegistration": 60000,
 		"intervalReadButtonState": 50,
 		"durationButtonThrottle": 3000,
-		"logButtonStateChanges": true
+		"logButtonStateChanges": true,
+		"logButtonActions": true,
+		"logButtonThrottles": true
 	},
 	"linphone": {
 		"runtimeInterval": 1000,
