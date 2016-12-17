@@ -7,6 +7,8 @@ const lp = new LinPhone(config.linphone);
 lp.start();
 
 let lastButtonPressedState = false;
+let lastDialState = false;
+let lastDialStart = undefined;
 
 function register() {
 	if(lp.getState().isRegistered === false) {
@@ -16,23 +18,30 @@ function register() {
 
 function checkDialTimeout() {
 
-	const state = lp.getState();
+	const newDialState = lp.getState().isDialing;
 
-	if(!state.isDialing) {
-		// either hung up or answered; either way: no further checks needed
+	if(lastDialState === true && newDialState === false) {
+		// stopped dialing
+		lastDialState = false;
+		lastDialStart = undefined;
 		return;
 	}
 
-	const now = new Date();
-
-	if(now - lastDialStart > config.runtime.durationDialTimeout) {
-		lp.hangup();
+	if(lastDialState === false && isDialing === true) {
+		// started dialing
+		lastDialState = true;
+		lastDialState = new Date();
 		return;
 	}
 
-	// The interval for the next check should not be to high,
-	// otherwise we could miss hangup + redial
-	timers.setTimeout(checkDialTimeout, config.runtime.intervalCheckDialTimeout);
+	if(lastDialState === true && isDialing === true) {
+		// continued dialing
+		if(now - lastDialStart > config.runtime.durationDialTimeout) {
+			// dial limit exceeded
+			lp.hangup();
+			return;
+		}
+	}
 }
 
 function throttle(fn, duration) {
@@ -69,9 +78,6 @@ function handleButton() {
 			console.log(`[runtime] dialing ${number}`);
 		}
 
-		lastDialStart = new Date();
-		timers.setTimeout(checkDialTimeout, config.runtime.intervalCheckDialTimeout);
-
 		lp.dial(number);
 	}
 	else {
@@ -84,10 +90,16 @@ function handleButton() {
 const handleButtonThrottled = throttle(handleButton, config.runtime.durationButtonThrottle);
 
 timers.setTimeout(() => {
+
 	// First-time registration
 	register();
+
 	// Interval for automatic re-registration
 	timers.setInterval(register, config.runtime.intervalCheckRegistration);
+
+	// Interval for dial termination after a certain duration
+	timers.setInterval(checkDialTimeout, config.runtime.intervalCheckDialTimeout);
+
 }, config.runtime.delayFirstRegistration);
 
 gpio.setup(config.gpio, () => {
