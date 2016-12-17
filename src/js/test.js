@@ -1,5 +1,6 @@
 const timers = require("timers");
 const LinPhone = require("./LinPhone.js");
+const gpio = require("./gpio.js");
 const config = require("./config.json");
 
 const lp = new LinPhone(config.linphone);
@@ -50,5 +51,5 @@ gpio.setup(config.gpio, () => {
 				}
 			}
 		})
-	}, intervalReadButtonState);
+	}, config.runtime.intervalReadButtonState);
 });
