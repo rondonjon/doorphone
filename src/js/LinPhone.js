@@ -170,6 +170,10 @@ class LinPhoneImpl {
 		this.start();
 	}
 
+	request(command) {
+		this.linphone.stdin.write(`${command}\n`);
+	}
+
 	runtimeLoop() {
 
 		if(this.config.logState) {
@@ -177,10 +181,10 @@ class LinPhoneImpl {
 		}
 
 		if(this.linphone) {
-			this.linphone.stdin.write('status register\n');
+			this.request('status register\n');
 			if(this.state.isRegistered) {
-				this.linphone.stdin.write('status hook\n');
-				//this.linphone.stdin.write('calls\n');
+				this.request('status hook\n');
+				//this.request('calls\n');
 			}
 		}
 
@@ -188,7 +192,7 @@ class LinPhoneImpl {
 	}
 
 	register(username, hostname, password) {
-		this.linphone.stdin.write(`register ${username} ${hostname} ${password}`);
+		this.request(`register ${username} ${hostname} ${password}\n`);
 	}
 
 	dial() {
@@ -211,26 +215,9 @@ class LinPhone {
 
 	constructor(config) {
 		this._impl = new LinPhoneImpl(config);
-	}
-
-	start() {
-		return this._impl.start();
-	}
-
-	dial(number) {
-		return this._impl.dial(number);
-	}
-
-	terminateCalls() {
-		return this._impl.terminateCalls();
-	}
-
-	register() {
-		return this._impl.register();
-	}
-
-	getState() {
-		return this._impl.getState();
+		['start', 'dial', 'terminateCalls', 'register', 'getState'].forEach(fn => {
+			this[fn] = () => this._impl[fn].apply(this._impl, arguments);
+		});
 	}
 }
 
