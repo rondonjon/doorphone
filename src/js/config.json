@@ -8,7 +8,7 @@
 		"minButtonWait": 3000
 	},
 	"linphone": {
-		"runtimeInterval": 50,
+		"runtimeInterval": 1000,
 		"logCommands": true,
 		"logState": true,
 		"logStateChanges": true,

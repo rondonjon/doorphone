@@ -104,6 +104,10 @@ class LinPhoneImpl {
 		that.runtimeTimeout = timers.setTimeout(() => that.runtimeLoop(), 500);
 	}
 
+	stop() {
+		this.request("quit");
+	}
+
 	handleCommand(command) {
 
 		const req = command.request;
@@ -218,7 +222,7 @@ class LinPhone {
 		const impl = new LinPhoneImpl(config);
 		const that = this;
 
-		['start', 'dial', 'terminateCalls', 'register', 'getState'].forEach(fn => {
+		['start', 'stop', 'dial', 'terminateCalls', 'register', 'getState'].forEach(fn => {
 			that[fn] = function() {
 				impl[fn].apply(impl, arguments);
 			};
