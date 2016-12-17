@@ -34,7 +34,7 @@ class OutTransform extends stream.Transform {
 		for(;;) {
 			// find combinations of request & response
 			// between every two 'linphonec> ' prompts
-			let v = that.str.replace(/linphonec> (.*)\n([^]*?)\nlinphonec> /m, handler);
+			let v = that.str.replace(/linphonec>      (.*)\n([^]*?)\nlinphonec> /m, handler);
 			if(v === that.str) {
 				break;
 			}
@@ -171,7 +171,7 @@ class LinPhoneImpl {
 	}
 
 	request(command) {
-		this.linphone.stdin.write(`${command}\n`);
+		this.linphone.stdin.write(`     ${command}\n`);
 	}
 
 	runtimeLoop() {
