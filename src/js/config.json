@@ -8,9 +8,12 @@
 		"minButtonWait": 3000
 	},
 	"linphone": {
-		"cmd": "linphonecsh",
-		"delay": 300,
-		"verbose": true
+		"runtimeInterval": 50,
+		"logCommands": true,
+		"logState": true,
+		"logStateChanges": true,
+		"executable": "linphonec",
+		"args": [ "-c", "config.tmp" ]
 	},
 	"sip": {
 		"username": "sip:620@fritz.box",
