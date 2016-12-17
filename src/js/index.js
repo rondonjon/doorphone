@@ -18,7 +18,19 @@ function register() {
 
 function checkDialTimeout() {
 
-	const newDialState = lp.getState().isDialing;
+	const state = lp.getState();
+
+	if(state === undefined) {
+		// not ready
+		return;
+	}
+
+	const newDialState = state.isDialing;
+
+	if(newDialState === undefined) {
+		// not ready
+		return;
+	}
 
 	if(lastDialState === true && newDialState === false) {
 		// stopped dialing
@@ -27,7 +39,7 @@ function checkDialTimeout() {
 		return;
 	}
 
-	if(lastDialState === false && isDialing === true) {
+	if(lastDialState === false && newDialState === true) {
 		// started dialing
 		lastDialState = true;
 		lastDialState = new Date();
