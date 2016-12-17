@@ -187,8 +187,8 @@ class LinPhoneImpl {
 		this.runtimeTimer = timers.setTimeout(() => this.runtimeLoop(), this.config.runtimeInterval);
 	}
 
-	register() {
-
+	register(username, hostname, password) {
+		this.linphone.stdin.write(`register ${username} ${hostname} ${password}`);
 	}
 
 	dial() {

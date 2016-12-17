@@ -13,7 +13,7 @@
 		"verbose": true
 	},
 	"sip": {
-		"username": "620",
+		"username": "sip:620@fritz.box",
 		"password": "620",
 		"hostname": "fritz.box",
 		"dial": "**622"
